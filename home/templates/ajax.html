@@ -1,0 +1,112 @@
+
+<script>
+
+
+    // grab the button  and add the data and display the data 
+    document.querySelector('#addbtn').addEventListener("click", postdata);
+
+    function postdata() {
+
+        {% comment %} starts here  {% endcomment %}
+
+        $.ajax({
+            url:"{% url 'save' %}",
+            method:"POST",
+            data:{
+                sid:$("#stuid").val(),
+                name:$("#nameid").val(),
+                email:$("#emailid").val(),
+                password:$("#passwordid").val(),
+                csrfmiddlewaretoken:$("input[name=csrfmiddlewaretoken]").val()
+            },
+            
+            success:function(response) {
+                
+                if(response.status == "Save") {
+                    console.log("data saved");
+                    $("form")[0].reset();  // reset the form content 
+                    {% comment %} console.log(response.data); {% endcomment %}
+                    let tble ="";
+                    response.data.forEach(element => {
+                        let row =`<tr>
+                                    <th scope="row">${element.id}</th>
+                                    <td>${element.name}</td>
+                                    <td>${element.email}</td>
+                                    <td>${element.password}</td>
+                                    <td>
+                                        <input type="button" class="btn btn-warning btn-sm my-1 edit" data-sid=${element.id} value="Edit">
+                                        <input type="button" class="btn btn-danger btn-sm my-1 del" data-sid=${element.id} value="Delete">
+                                    </td>
+                                </tr>`;
+                        tble+=row;
+                    })
+                    // finally add all data to table 
+                    $(".content").html(tble);
+                }
+                if(response.status == 0) {
+                    console.log("error have been occured");
+                }
+            }
+        })
+    };
+
+
+
+
+    {% comment %} delete {% endcomment %}
+    $(".content").on("click",".del",function() {
+        console.log("clicked");
+        mythis = this;
+        $.ajax({
+            url:"{% url 'delete' %}",
+            method:"POST",
+            data: {
+                sid:$(this).attr("data-sid"),
+                csrfmiddlewaretoken:$("input[name=csrfmiddlewaretoken]").val()
+            },
+
+            {% comment %} simply remove the data from frontend using below two methods  {% endcomment %}
+            success:function(response) {
+                if(response.status == 1) {
+                    console.log("deleted");
+                    // console.log($(mythis).parent().parent().fadeOut(400));  // can use these also
+                    $(mythis).closest("tr").fadeOut();
+                }
+            }
+        })
+    });
+
+
+    
+    {% comment %} edit data  {% endcomment %}
+    $(".content").on("click",".edit",function() {
+        console.log("edit");
+        $.ajax({
+            url:"{% url 'edit' %}",
+            method:"POST",
+            data: {
+                sid:$(this).attr("data-sid"),
+                csrfmiddlewaretoken:$("input[name=csrfmiddlewaretoken]").val()
+            },
+
+            {% comment %} fetch all data and append it using the val {% endcomment %}
+            success:function(response) {
+                if(response.status == 1) {
+                    data = response.data;
+                    $("#stuid").val(data.id);
+                    $("#nameid").val(data.name);
+                    $("#emailid").val(data.email);
+                    $("#passwordid").val(data.password);
+                }
+            }
+        })
+    });
+
+
+
+    
+
+    
+
+</script>
+

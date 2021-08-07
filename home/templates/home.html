@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center alert alert-danger my-2  ">Simple CRUD operations using Ajax </h1>
+
+    <div class="row">
+        <div class="col-sm-5">
+            <h2 class="alert alert-primary text-center">Add Data </h2>
+
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="stuid" id="stuid">
+                {{form.as_p}}
+                <input type="button" class="btn btn-success btn-sm my-1" id="addbtn" value="Add">
+            </form>
+        </div>
+
+
+        <div class="col-sm-7">
+            <h2 class="alert alert-primary text-center">Your Data </h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Password</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="content">
+                    {% for data in data %}
+                    <tr>
+                        <th scope="row">{{data.id}}</th>
+                        <td>{{data.name}}</td>
+                        <td>{{data.email}}</td>
+                        <td>{{data.password}}</td>
+                        <td>
+                            <input type="button" class="btn btn-warning btn-sm my-1 edit" data-sid="{{data.id}}" value="Edit">
+                            <input type="button" class="btn btn-danger btn-sm my-1 del" data-sid="{{data.id}}"  value="Delete">
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+
+    </div>
+</div>
+{% endblock content %}
+
+{% block js %}
+
+{% include 'ajax.html' %}
+
+{% endblock js %}
